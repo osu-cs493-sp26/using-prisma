@@ -1,13 +1,16 @@
 import { Router } from 'express'
 
+import prisma from '../lib/prisma.js'
+
 const router = Router()
 
 router.get('/', (req, res, next) => {
     res.status(200).send({})
 })
 
-router.post('/', (req, res, next) => {
-    res.status(201).send({})
+router.post('/', async (req, res, next) => {
+    const lodging = await prisma.lodging.create({ data: req.body })
+    res.status(201).send({ id: lodging.id })
 })
 
 router.get('/:id', (req, res, next) => {

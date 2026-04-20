@@ -1,0 +1,20 @@
+datasource db {
+    provider = "postgresql"
+}
+
+generator client {
+    provider = "prisma-client"
+    output = "../generated/prisma"
+}
+
+model Lodging {
+    id          Int         @id @default(autoincrement())
+    createdAt   DateTime    @default(now())
+    name        String
+    description String
+    street      String
+    city        String
+    state       String      @db.VarChar(2)
+    zip         String      @db.VarChar(5)
+    price       Float
+}
