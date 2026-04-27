@@ -6,8 +6,45 @@ import { Lodging } from '../lib/zod.js'
 const router = Router()
 
 router.get('/', async (req, res, next) => {
-    const lodgings = await prisma.lodging.findMany()
-    res.status(200).send({ lodgings: lodgings })
+    const cursor = parseInt(req.query.cursor)
+    const pageSize = 2
+    let lodgings = await prisma.lodging.findMany({
+        cursor: cursor ? { id: cursor } : undefined,
+        take: pageSize + 1,
+        skip: cursor ? 1 : 0,
+        orderBy: { id: "asc" }
+    })
+    const hasNextPage = lodgings.length > pageSize
+    lodgings = hasNextPage ? lodgings.slice(0, -1) : lodgings
+    res.status(200).send({
+        lodgings: lodgings,
+        page: {
+            pageSize: pageSize,
+            nextCursor: hasNextPage
+                ? lodgings[lodgings.length - 1].id
+                : null
+        }
+    })
+    // const start = parseInt(req.query.start) || 0
+    // const pageSize = 2
+    // const [ lodgings, totalLodgings ] = await prisma.$transaction([
+    //     prisma.lodging.findMany({
+    //         skip: start,
+    //         take: pageSize,
+    //         orderBy: {
+    //             createdAt: "asc"
+    //         }
+    //     }),
+    //     prisma.lodging.count()
+    // ])
+    // res.status(200).send({
+    //     lodgings: lodgings,
+    //     page: {
+    //         start: start,
+    //         pageSize: pageSize,
+    //         total: totalLodgings
+    //     }
+    // })
 })
 
 router.post('/', async (req, res, next) => {
