@@ -60,7 +60,8 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     const id = parseInt(req.params.id)
     const lodging = await prisma.lodging.findUnique({
-        where: { id: id }
+        where: { id: id },
+        include: { reservations: true }
     })
     if (lodging) {
         res.status(200).send(lodging)

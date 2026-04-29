@@ -8,13 +8,23 @@ generator client {
 }
 
 model Lodging {
+    id              Int         @id @default(autoincrement())
+    createdAt       DateTime    @default(now())
+    name            String
+    description     String
+    street          String
+    city            String
+    state           String      @db.VarChar(2)
+    zip             String      @db.VarChar(5)
+    price           Float
+    reservations    Reservation[]
+}
+
+model Reservation {
     id          Int         @id @default(autoincrement())
     createdAt   DateTime    @default(now())
-    name        String
-    description String
-    street      String
-    city        String
-    state       String      @db.VarChar(2)
-    zip         String      @db.VarChar(5)
-    price       Float
+    start       DateTime
+    end         DateTime
+    lodgingId   Int
+    lodging     Lodging     @relation(fields: [lodgingId], references: [id], onDelete: Cascade)
 }
